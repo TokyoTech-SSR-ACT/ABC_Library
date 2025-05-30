@@ -3,8 +3,8 @@
 #include <Arduino.h>
 #include <HardwareSerial.h>
 
+#include "abc_config.hpp"
 #include "abc_pin_assign.hpp"
-#include "battery_info.hpp"
 
 extern HardwareSerial Debug_Serial;  // Use USB
 extern HardwareSerial RS485_Serial;  // Use IO32, & IO33
