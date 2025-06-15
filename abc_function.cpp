@@ -74,9 +74,6 @@ bool Check_Battery_Voltage(double R10, double R11) {
     battery_voltage = Battery_Voltage_ScaleFactor *
                       (3.3 * analogRead(BATTERY_VOLTAGE_PIN) / 4095) *
                       (R10 + R11) / R11;
-    // Debug_Serial.printf("Raw ADC Value: %d\n",
-    // analogRead(BATTERY_VOLTAGE_PIN)); Debug_Serial.printf("Battery Voltage:
-    // %.2f V\n", battery_voltage);
     if (max_battery_boltage < battery_voltage ||
         battery_voltage < min_battery_voltage) {
         return 1;
