@@ -20,9 +20,7 @@ void Battery_Voltage_Calibration(double R10, double R11);
 bool Check_Battery_Voltage(double R10, double R11);
 void Serial_Begin(uint32_t DS_rate, uint32_t RS_rate, uint32_t SS_rate);
 
-static constexpr uint8_t pwmch_Speaker = 0;
-extern double battery_voltage;
-extern double Battery_Voltage_ScaleFactor;  // Scale factor for battery voltage
-extern const double max_battery_boltage;
-extern const double min_battery_voltage;
+const uint8_t pwmch_Speaker = 0;
+const double max_battery_boltage = 4.2 * BATTERY_S_NO;
+const double min_battery_voltage = 3.5 * BATTERY_S_NO;
 };

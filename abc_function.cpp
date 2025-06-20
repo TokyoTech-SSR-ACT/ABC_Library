@@ -8,8 +8,6 @@ namespace ABC {
 
 double battery_voltage = 0.0;
 double Battery_Voltage_ScaleFactor = 1.0;
-const double max_battery_boltage = 4.2 * BATTERY_S_NO;
-const double min_battery_voltage = 3.5 * BATTERY_S_NO;
 
 void PIN_SETUP(void) {
     pinMode(BATTERY_VOLTAGE_PIN, INPUT);
