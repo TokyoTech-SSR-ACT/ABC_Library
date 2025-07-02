@@ -6,6 +6,7 @@ HardwareSerial Servo_Serial(2);  // Use IO16, & IO17
 
 namespace ABC {
 
+uint8_t battery_voltage_count;
 double battery_voltage = 0.0;
 double Battery_Voltage_ScaleFactor = 1.0;
 
@@ -33,6 +34,9 @@ void PIN_SETUP(void) {
         Battery_Voltage_ScaleFactor > 2.0) {
         Battery_Voltage_ScaleFactor = 1.0;  // fallback
     }
+
+    // initialize battery voltage count
+    battery_voltage_count = 0;
 }
 
 void PW_Switch_LED(bool R, bool G, bool B) {
@@ -43,7 +47,13 @@ void PW_Switch_LED(bool R, bool G, bool B) {
 
 void Battery_Voltage_Calibration(double R10, double R11) {
     // EEPROMから設定値を読み込む
+    battery_voltage = Battery_Voltage_ScaleFactor *
+                      (3.3 * analogRead(BATTERY_VOLTAGE_PIN) / 4095) *
+                      (R10 + R11) / R11;
     Debug_Serial.println("=== Welcome to Batery Voltage Calibration Mode ===");
+    Debug_Serial.print("Now, the measured voltage is");
+    Debug_Serial.print(battery_voltage);
+    Debug_Serial.println(" V.");
     Debug_Serial.println(
         "Please input the actual battery voltage (in volts, e.g., 7.40):");
 
@@ -72,7 +82,7 @@ bool Check_Battery_Voltage(double R10, double R11) {
     battery_voltage = Battery_Voltage_ScaleFactor *
                       (3.3 * analogRead(BATTERY_VOLTAGE_PIN) / 4095) *
                       (R10 + R11) / R11;
-    if (max_battery_boltage < battery_voltage ||
+    if (max_battery_voltage < battery_voltage ||
         battery_voltage < min_battery_voltage) {
         return 1;
     } else {
