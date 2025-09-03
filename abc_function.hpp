@@ -3,6 +3,7 @@
 #include <Arduino.h>
 #include <EEPROM.h>
 #include <HardwareSerial.h>
+#include <bluepad32.h>
 
 #include "abc_config.hpp"
 #include "abc_pin_assign.hpp"
@@ -19,6 +20,11 @@ void PW_Switch_LED(bool R, bool G, bool B);
 void Battery_Voltage_Calibration(double R10, double R11);
 bool Check_Battery_Voltage(double R10, double R11);
 void Serial_Begin(uint32_t DS_rate, uint32_t RS_rate, uint32_t SS_rate);
+
+// BluePad32用のセットアップ
+void BluePad32_Controller_Setup(bool enable_touchpad_and_mouse);
+void onConnectedController(ControllerPtr ctl);
+void onDisconnectedController(ControllerPtr ctl);
 
 extern uint8_t battery_voltage_count;
 
