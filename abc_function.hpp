@@ -10,6 +10,8 @@
 
 #define EEPROM_ADDR 0
 
+extern ControllerPtr myControllers[BP32_MAX_GAMEPADS];
+
 extern HardwareSerial Debug_Serial;  // Use USB
 extern HardwareSerial RS485_Serial;  // Use IO32, & IO33
 extern HardwareSerial Servo_Serial;  // Use IO16, & IO17
