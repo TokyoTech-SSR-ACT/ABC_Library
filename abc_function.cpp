@@ -1,5 +1,7 @@
 #include "abc_function.hpp"
 
+ControllerPtr myControllers[BP32_MAX_GAMEPADS];
+
 HardwareSerial Debug_Serial(0);  // Use USB
 HardwareSerial RS485_Serial(1);  // Use IO32, & IO33
 HardwareSerial Servo_Serial(2);  // Use IO16, & IO17
@@ -101,5 +103,70 @@ void Serial_Begin(uint32_t DS_rate, uint32_t RS_rate, uint32_t SS_rate) {
     Servo_Serial.begin(SS_rate);
     Servo_Serial.setTimeout(1000);  // タイムアウトを1秒に設定
     Debug_Serial.println("Servo Serial initialized.");
+}
+
+// BluePad32用のセットアップ
+void BluePad32_Controller_Setup(bool enable_touchpad_and_mouse) {
+    // Setup the Bluepad32 callbacks
+    BP32.setup(&onConnectedController, &onDisconnectedController);
+
+    // "forgetBluetoothKeys()" should be called when the user performs
+    // a "device factory reset", or similar.
+    // Calling "forgetBluetoothKeys" in setup() just as an example.
+    // Forgetting Bluetooth keys prevents "paired" gamepads to reconnect.
+    // But it might also fix some connection / re-connection issues.
+    BP32.forgetBluetoothKeys();
+
+    // Enables mouse / touchpad support for gamepads that support them.
+    // When enabled, controllers like DualSense and DualShock4 generate two
+    // connected devices:
+    // - First one: the gamepad
+    // - Second one, which is a "virtual device", is a mouse.
+    // By default, it is disabled.
+    BP32.enableVirtualDevice(enable_touchpad_and_mouse);
+}
+
+// This callback gets called any time a new gamepad is connected.
+// Up to 4 gamepads can be connected at the same time.
+void onConnectedController(ControllerPtr ctl) {
+    bool foundEmptySlot = false;
+    for (int i = 0; i < BP32_MAX_GAMEPADS; i++) {
+        if (myControllers[i] == nullptr) {
+            Serial.printf("[INFO]: Controller is connected, index=%d\n", i);
+            // Additionally, you can get certain gamepad properties like:
+            // Model, VID, PID, BTAddr, flags, etc.
+            ControllerProperties properties = ctl->getProperties();
+            Serial.printf(
+                "[INFO]: Controller model: %s, VID=0x%04x, PID=0x%04x\n",
+                ctl->getModelName().c_str(), properties.vendor_id,
+                properties.product_id);
+            myControllers[i] = ctl;
+            foundEmptySlot = true;
+            break;
+        }
+    }
+    if (!foundEmptySlot) {
+        Serial.println(
+            "[WARNING] Controller connected, but could not found empty slot");
+    }
+}
+
+void onDisconnectedController(ControllerPtr ctl) {
+    bool foundController = false;
+
+    for (int i = 0; i < BP32_MAX_GAMEPADS; i++) {
+        if (myControllers[i] == ctl) {
+            Serial.printf("[INFO]: Controller disconnected from index=%d\n", i);
+            myControllers[i] = nullptr;
+            foundController = true;
+            break;
+        }
+    }
+
+    if (!foundController) {
+        Serial.println(
+            "[INFO]: Controller disconnected, but not found in "
+            "myControllers");
+    }
 }
 }  // namespace ABC
